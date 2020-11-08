@@ -11,8 +11,8 @@ namespace SimpleArray
         static void Main(string[] args)
         {
             int width = 6;
-            int height = 25;
-            int blocks = 2;
+            int height = 3;
+            int blocks = 3;
 
             int[] source = Enumerable.Range(0, width * height).ToArray();
 
@@ -22,11 +22,11 @@ namespace SimpleArray
                 for (int j = 0 ; j < width/blocks; j++)
 
                 {
+                    int index = j * blocks + i * width;
 
-                    for (int k = j+0; k < blocks + j; k++)
+                    for (int k = 0; k < blocks; k++)
                     {
-                        int index = j + k + i * width;
-                        Console.Write(source[index]);
+                        Console.Write(source[index + k]);
                     }
 
                     Console.Write(" | ");
