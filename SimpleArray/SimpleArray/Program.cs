@@ -11,41 +11,27 @@ namespace SimpleArray
         static void Main(string[] args)
         {
             int width = 6;
-            int columns = 2;
+            int height = 25;
             int blocks = 2;
 
-            int[] source = Enumerable.Range(0, width * columns).ToArray();
+            int[] source = Enumerable.Range(0, width * height).ToArray();
 
-            for (int i = 0; i < columns; i++)
-            { 
-                for (int j = 0+i; j < width; j+=blocks)
-            
-                {
-                        int copyElement = source[j];
-                        int index = (width * columns - blocks + blocks*i) - j;
-                        source[index] = copyElement;                  
-                }
-            }
-            int m = 1;
-            foreach (int element in source)
+
+            for (int i = 0; i < height; i++)
             {
-                if (m != 1 & m % blocks == 0)
+                for (int j = 0 ; j < width/blocks; j++)
+
                 {
-                    if (m == width)
+
+                    for (int k = j+0; k < blocks + j; k++)
                     {
-                        Console.WriteLine(element);
-                    }
-                    else
-                    {
-                        Console.Write($"{element} | ");
+                        int index = j + k + i * width;
+                        Console.Write(source[index]);
                     }
 
+                    Console.Write(" | ");
                 }
-                else
-                {
-                    Console.Write(element);
-                }
-                m += 1;
+                Console.Write(Environment.NewLine);
             }
             Console.ReadLine();
         }
