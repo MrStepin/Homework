@@ -16,17 +16,18 @@ namespace SimpleArray
 
             int[] source = Enumerable.Range(0, width * columns).ToArray();
 
-            for (int i = blocks - 1; i > -1; i--)
-            {
-                for (int j = width; j < width * columns; j+=blocks)
+            for (int i = 0; i < columns; i++)
+            { 
+                for (int j = 0+i; j < width; j+=blocks)
+            
                 {
-                    int copyElement = source[j - width +i];
-                    source[j+1-1*i] = copyElement;
+                        int copyElement = source[j];
+                        int index = (width * columns - blocks + blocks*i) - j;
+                        source[index] = copyElement;                  
                 }
             }
-
             int m = 1;
-            foreach(int element in source)
+            foreach (int element in source)
             {
                 if (m != 1 & m % blocks == 0)
                 {
