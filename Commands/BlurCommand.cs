@@ -42,9 +42,12 @@ namespace ConvolutionWpf.Commands
                 }
             }
 
-            for (int i = (matrixSize -1)/2; i < (image.PixelHeight - (matrixSize - 1) / 2); i++)
+            int kernelMatrixFormula = (matrixSize - 1) / 2;
+
+
+            for (int i = kernelMatrixFormula; i < (image.PixelHeight - kernelMatrixFormula); i++)
             {
-                for (int j = (matrixSize - 1) / 2; j < (image.PixelWidth - (matrixSize - 1) / 2); j++)
+                for (int j = kernelMatrixFormula; j < (image.PixelWidth - kernelMatrixFormula); j++)
                 {
                     int indexOld = i * image.BackBufferStride + 4 * j;
 
@@ -52,13 +55,18 @@ namespace ConvolutionWpf.Commands
                     {
                         int sumOfMatrixElements = 0;
 
-                        for (int k = i - (matrixSize - 1) / 2; k < i + ((matrixSize -1)/2) +1; k++)
+                        for (int k = i - kernelMatrixFormula; k < i + kernelMatrixFormula + 1; k++)
                         {
-                            for (int m = j - (matrixSize - 1) / 2; m < j + ((matrixSize - 1)/2) + 1; m++)
+                            int row = 0;
+                            for (int m = j - kernelMatrixFormula; m < j + kernelMatrixFormula + 1; m++)
                             {
-                                int elementOfMatrix = (byte) (pixels[(k * image.BackBufferStride + 4 * m) + c] * matrixValue);
+                                
+                                int column = 0;
+                                int elementOfMatrix = (byte) (pixels[(k * image.BackBufferStride + 4 * m) + c] * matrix[row,column]);
                                 sumOfMatrixElements += elementOfMatrix;
+                                column += 1;
                             }
+                            row += 1;
                         }
                         resultPixels[indexOld + c] = (byte)(sumOfMatrixElements / (matrixSize * matrixSize));
                     }
