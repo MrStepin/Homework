@@ -28,25 +28,39 @@ namespace ConvolutionWpf.Commands
 
             var resultPixels = new byte[image.PixelHeight * image.BackBufferStride];
 
-            for (int i = 1; i < (image.PixelHeight -1); i++)
+            int matrixSize = 5;
+
+            int matrixValue = 1;
+
+            int[,] matrix = new int[matrixSize, matrixSize];
+
+            for (int row = 0; row < matrixSize; row++)
             {
-                for (int j = 1; j < (image.PixelWidth -1); j++)
+                for (int column = 0; column < matrixSize; column++)
+                {
+                    matrix[row,column] = matrixValue;
+                }
+            }
+
+            for (int i = (matrixSize -1)/2; i < (image.PixelHeight - (matrixSize - 1) / 2); i++)
+            {
+                for (int j = (matrixSize - 1) / 2; j < (image.PixelWidth - (matrixSize - 1) / 2); j++)
                 {
                     int indexOld = i * image.BackBufferStride + 4 * j;
 
                     for (int c = 0; c < 3; ++c)
                     {
-                        int resultIndex = 0;
+                        int sumOfMatrixElements = 0;
 
-                        for (int k = i - 1; k < i + 2; k++)
+                        for (int k = i - (matrixSize - 1) / 2; k < i + ((matrixSize -1)/2) +1; k++)
                         {
-                            for (int m = j - 1; m < j + 2; m++)
+                            for (int m = j - (matrixSize - 1) / 2; m < j + ((matrixSize - 1)/2) + 1; m++)
                             {
-                                int KernelIndex = (byte) (pixels[(k * image.BackBufferStride + 4 * m) + c] *1);
-                                resultIndex += KernelIndex;
+                                int elementOfMatrix = (byte) (pixels[(k * image.BackBufferStride + 4 * m) + c] * matrixValue);
+                                sumOfMatrixElements += elementOfMatrix;
                             }
                         }
-                        resultPixels[indexOld + c] = (byte)(resultIndex/ 9);
+                        resultPixels[indexOld + c] = (byte)(sumOfMatrixElements / (matrixSize * matrixSize));
                     }
 
 
