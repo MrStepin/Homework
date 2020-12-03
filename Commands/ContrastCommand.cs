@@ -30,13 +30,17 @@ namespace ConvolutionWpf.Commands
 
             int[] sourceColors = Enumerable.Range(0, 256).ToArray();
 
-            Dictionary<int, int> cumulativeHistogram = new Dictionary<int, int>();
+            List<int> histogram = new List<int>();
 
-            int pixelsCount = image.PixelWidth * image.PixelHeight;
+            List<int> cumulativeHistogram = new List<int>();
+
+            int pixelsCount = 3 * image.PixelWidth * image.PixelHeight;
+
+            int colorCount = 0;
 
             foreach (byte color in sourceColors) 
             {
-                int colorCount = 0;
+                colorCount = 0;
 
                 for (int i = 0; i < image.PixelWidth; ++i)
                 {
@@ -51,24 +55,33 @@ namespace ConvolutionWpf.Commands
                     }
                 }
 
-                cumulativeHistogram.Add(color, colorCount);
+                histogram.Add(colorCount);
+            }
+
+            int previousValue = 0;
+            for (int histogramIndex = 0; histogramIndex < 256; histogramIndex++)
+            {
+
+                histogram[histogramIndex] = histogram[histogramIndex] + previousValue;
+                previousValue = histogram[histogramIndex];
+
             }
 
             List<int> low = new List<int>();
             List<int> high = new List<int>();
 
-            int keyOfCumulativeHistogram = 0;
-            foreach (var value in cumulativeHistogram.Values)
+            int countOfCumulativeHistogram = 0;
+            foreach (var value in histogram)
             {
                 if (value < 0.05 * pixelsCount)
                 {
-                    low.Add(keyOfCumulativeHistogram);
+                    low.Add(countOfCumulativeHistogram);
                 }
                 else if(value > 0.95 * pixelsCount)
                 {
-                    high.Add(keyOfCumulativeHistogram);
+                    high.Add(countOfCumulativeHistogram);
                 }
-                keyOfCumulativeHistogram += 1;
+                countOfCumulativeHistogram += 1;
             }
 
             int minValue = 0;
