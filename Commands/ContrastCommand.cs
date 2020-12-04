@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -32,13 +33,11 @@ namespace ConvolutionWpf.Commands
 
             List<int> histogram = new List<int>();
 
-            List<int> cumulativeHistogram = new List<int>();
-
             int pixelsCount = 3 * image.PixelWidth * image.PixelHeight;
 
             int colorCount = 0;
 
-            foreach (byte color in sourceColors) 
+            foreach (byte color in sourceColors)
             {
                 colorCount = 0;
 
@@ -46,12 +45,12 @@ namespace ConvolutionWpf.Commands
                 {
                     for (int j = 0; j < image.PixelHeight; ++j)
                     {
-                        int index = j * image.BackBufferStride + i;
+                        int index = j * image.BackBufferStride + i * 4;
 
                         if (pixels[index] == color)
-                            {
+                        {
                             colorCount += 1;
-                            }
+                        }
                     }
                 }
 
@@ -77,7 +76,7 @@ namespace ConvolutionWpf.Commands
                 {
                     low.Add(countOfCumulativeHistogram);
                 }
-                else if(value > 0.95 * pixelsCount)
+                else if (value > 0.95 * pixelsCount)
                 {
                     high.Add(countOfCumulativeHistogram);
                 }
@@ -104,21 +103,20 @@ namespace ConvolutionWpf.Commands
                 {
                     int index = j * image.BackBufferStride + 4 * i;
 
-                    if (pixels[index] <= minValue)
-                    {
-                        resultByte = 0;
-                    }
-                    else if (pixels[index] >= maxValue)
-                    {
-                        resultByte = 255;
-                    }
-                    else
-                    {
-                        resultByte = (byte)(pixels[index] - minValue / (maxValue - minValue));
-                    }
-
                     for (int c = 0; c < 3; ++c)
                     {
+                        if (pixels[index + c] <= minValue)
+                        {
+                            resultByte = 0;
+                        }
+                        else if (pixels[index + c] >= maxValue)
+                        {
+                            resultByte = 255;
+                        }
+                        else
+                        {
+                            resultByte = (byte)(pixels[index + c] - minValue / (maxValue - minValue));
+                        }
                         resultPixels[index + c] = resultByte;
                     }
                 }
