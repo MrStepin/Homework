@@ -29,17 +29,9 @@ namespace ConvolutionWpf.Commands
 
             var resultPixels = new byte[image.PixelHeight * image.BackBufferStride];
 
-            int[] sourceColors = Enumerable.Range(0, 256).ToArray();
-
-            List<int> histogram = new List<int>();
+            int[] histogram = Enumerable.Range(0, 256).ToArray();
 
             int pixelsCount = 3 * image.PixelWidth * image.PixelHeight;
-
-            int colorCount = 0;
-
-            foreach (byte color in sourceColors)
-            {
-                colorCount = 0;
 
                 for (int i = 0; i < image.PixelWidth; ++i)
                 {
@@ -47,15 +39,13 @@ namespace ConvolutionWpf.Commands
                     {
                         int index = j * image.BackBufferStride + i * 4;
 
-                        if (pixels[index] == color)
+                        for (int c = 0; c < 3; ++c)
                         {
-                            colorCount += 1;
+                            histogram[pixels[index + c]] = histogram[pixels[index + c]]+1;
+                        
                         }
                     }
                 }
-
-                histogram.Add(colorCount);
-            }
 
             int previousValue = 0;
             for (int histogramIndex = 0; histogramIndex < 256; histogramIndex++)
@@ -66,36 +56,28 @@ namespace ConvolutionWpf.Commands
 
             }
 
-            List<int> low = new List<int>();
-            List<int> high = new List<int>();
-
-            int countOfCumulativeHistogram = 0;
-            foreach (var value in histogram)
-            {
-                if (value < 0.05 * pixelsCount)
-                {
-                    low.Add(countOfCumulativeHistogram);
-                }
-                else if (value > 0.95 * pixelsCount)
-                {
-                    high.Add(countOfCumulativeHistogram);
-                }
-                countOfCumulativeHistogram += 1;
-            }
-
             int minValue = 0;
-            int maxValue = 255;
-            byte resultByte = 0;
+            int maxValue = 0;
 
-            if (low.Count != 0)
+            for (int i = 0; i < 256; i++)
             {
-                minValue = low.Max();
+                if (histogram[i] >= pixelsCount * 0.05)
+                {
+                    minValue = i;
+                    break;
+                }
             }
 
-            if (high.Count != 0)
+            for (int i = 255; i > 0; i--)
             {
-                maxValue = high.Min();
+                if (histogram[i] <= pixelsCount * 0.95)
+                {
+                    maxValue = i;
+                    break;
+                }
             }
+
+            double resultByte = 0;
 
             for (int i = 0; i < image.PixelWidth; ++i)
             {
@@ -103,7 +85,7 @@ namespace ConvolutionWpf.Commands
                 {
                     int index = j * image.BackBufferStride + 4 * i;
 
-                    for (int c = 0; c < 3; ++c)
+                    for (int c = 0; c < 3; c++)
                     {
                         if (pixels[index + c] <= minValue)
                         {
@@ -115,9 +97,9 @@ namespace ConvolutionWpf.Commands
                         }
                         else
                         {
-                            resultByte = (byte)(pixels[index + c] - minValue / (maxValue - minValue));
+                            resultByte = ((pixels[index + c] - minValue) / (maxValue - minValue));
                         }
-                        resultPixels[index + c] = resultByte;
+                        resultPixels[index + c] = (byte) resultByte;
                     }
                 }
             }
