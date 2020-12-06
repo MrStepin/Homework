@@ -97,7 +97,7 @@ namespace ConvolutionWpf.Commands
                         }
                         else
                         {
-                            resultByte = ((pixels[index + c] - minValue) / (maxValue - minValue));
+                            resultByte = (((double)pixels[index + c] - minValue) / (maxValue - minValue))*255;
                         }
                         resultPixels[index + c] = (byte) resultByte;
                     }
